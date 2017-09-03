@@ -1,11 +1,13 @@
 #!/bin/bash
 mkdir -p $1
 cd $1
+brew list jq || brew install jq
 truffle init
 npm init
 npm install --save-dev solium
-var="\"test\": \"./node_modules/.bin/solium --dir contracts && truffle test\""
-sed -i '' 's/.*"test": "echo.*/"${var}"/' package.json
+jq '.scripts.test = "./node_modules/.bin/solium --dir contracts && truffle test"' < ./package.json | tee ./aa.json
+cat ./aa.json | tee ./package.json
+rm -f ./aa.json
 solium --init
 cat >>./.gitignore <<EOF
 "node_modules\/"
